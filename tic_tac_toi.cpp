@@ -22,6 +22,7 @@ void print_board(const vector<char>& board, char current_player) {
     }
     cout << "\n";
 }
+
 // Check for a win
 bool check_win(const vector<char>& board, char player) {
     // Define the winning combinations
@@ -63,27 +64,43 @@ int get_move(const vector<char>& board) {
     }
 }
 
+bool is_valid_move(const vector<char>& board, int move) {
+    return move >= 0 && move < board.size() && board[move] == ' ';
+}
+
 void play_game() {
     vector<char> board(9, ' ');
+    vector<char> player_symbols = {'X', 'O'};
     int current_player_index = 0;
+    bool game_over = false;
 
-    while (true) {
+    while (!game_over) {
         print_board(board, player_symbols[current_player_index]);
-        int move = get_move(board);
+        int move;
+        do {
+            cout << "Player '" << player_symbols[current_player_index] << "', enter your move (0-8): ";
+            cin >> move;
+        } while (!is_valid_move(board, move));
         board[move] = player_symbols[current_player_index];
 
         if (check_win(board, player_symbols[current_player_index])) {
             print_board(board, player_symbols[current_player_index]);
             cout << "Player '" << player_symbols[current_player_index] << "' wins!\n";
-            break;
-        }
-        else if (check_draw(board)) {
+            game_over = true;
+        } else if (check_draw(board)) {
             print_board(board, player_symbols[current_player_index]);
             cout << "It's a draw!\n";
-            break;
+            game_over = true;
+        } else {
+            current_player_index = (current_player_index + 1) % 2;
         }
+    }
 
-        current_player_index = (current_player_index + 1) % 2;
+    char replay;
+    cout << "Do you want to play again? (y/n): ";
+    cin >> replay;
+    if (tolower(replay) == 'y') {
+        play_game();
     }
 }
 
